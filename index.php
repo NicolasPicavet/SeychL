@@ -7,19 +7,31 @@
         <link rel="stylesheet" href="styles.css?v=1.0">
 
         <title>SeychL</title>
+
+        <script>
+            function selectSequence() {
+                var selected_sequence = document.getElementById("sequence-select").value;
+                var current_selected_sequence = document.getElementById("sequence-selected");
+                if (current_selected_sequence != null) {
+                    current_selected_sequence.id = "";
+                }
+                var sequences = document.getElementsByClassName("sequence");
+                for(var i = 0; i < sequences.length; i++) {
+                    if(i == selected_sequence - 1) {
+                        sequences[i].id = "sequence-selected";
+                    }
+                }
+            }
+        </script>
     </head>
     <body>
-        <header id="main-header">
-            <h1>SeychL</h1>
-        </header>
+        <header id="main-header"></header>
 
         <section id="map">
-            <h4>Map</h4>
-            <?php require("map/map.html"); ?>
+            <iframe src="map/map.html"></iframe>
         </section>
 
         <section id="pictures">
-            <h4>Pictures</h4>
             <?php require("pictures/pictures.php")?>
         </section>
 
