@@ -27,31 +27,32 @@ routesj4 <- readOGR("routes_j4.shp")
 routes_Praslin <- readOGR("routes_Praslin.shp")
 routes_Digue <- readOGR("routes_Digue.shp")
 
+mai <- readOGR("mai.shp")
+
 places_points <- readOGR("lieux_vacs.shp", use_iconv = TRUE, encoding = "UTF-8")
+hebergement <- readOGR("hebergement.shp", use_iconv = TRUE, encoding = "UTF-8")
+hebergement <- as.data.frame(hebergement)
+colnames(hebergement)[3] <- "lng"
+colnames(hebergement)[4] <- "lat"
 
 # fonctions
 
 createmap <- function () {
   ## Initialisation 
-  m <- leaflet(padding = 0) %>% fitBounds(     lng1 = 55.1977,
-                                               lat1 = -4.5292,
-                                               lng2 = 55.7367, 
-                                               lat2 = -4.8471)
+  m <- leaflet(padding = 0, hebergement) %>% addMarkers(~lng, ~lat, icon = makeIcon("house.png", iconWidth = 15), group= "hebergements")
+  
+  m <- m %>% addTiles()%>% fitBounds(     lng1 = 55.25,#55.1977,
+                                               lat1 = -4.6555,#-4.5292,
+                                               lng2 = 55.68,#55.7367, 
+                                               lat2 = -4.6560)#-4.8471)
   ## Ajout des iles
-  m <- addPolygons(map = m, data = iles,
-                   opacity = 100, 
-                   color = "#454545", 
-                   weight = 0.25,popup = NULL,
-                   options = list(clickable = FALSE), 
-                   fill = T, fillColor = "#B3C4B3", 
-                   fillOpacity = 100)
+#  m <- addPolygons(map = m, data = iles,  opacity = 100,    color = "#454545", 
+#                   weight = 0.25,popup = NULL,  options = list(clickable = FALSE),           fill = T, fillColor = "#B3C4B3",      fillOpacity = 100)
   return(m)
 }
 
 addroad <- function(m, data, group) {
-  m <- addPolylines(map = m, data = data, group = group,
-                    highlightOptions = highlightOptions(color = "white", weight = 2,
-                                                        bringToFront = TRUE))
+  m <- addPolylines(map = m, data = data, group = group)#,            highlightOptions = highlightOptions(color = "white", weight = 2,                                                        bringToFront = TRUE))
   return(m)
 }
 
@@ -65,59 +66,44 @@ addplace <- function(m, data, group) {
 }
 
 
+
+groupes <- c("Mahe - Nord", "Mahe - Pêche", "Mahe - Centre", "Mahe - Sud", "Praslin", "La Digue", "hebergements")
+lesroutes <- c("routesj1", "routesj2", "routesj3", "routesj4", "routes_Praslin", "routes_Digue")
+
+
+addsequences <- function(ind, m) {
+  group <- groupes[ind]
+
+  b <- places_points[places_points$jour == ind,]  
+  m <- addplace(m, b, group)
+  
+  data <- eval(as.name(lesroutes[ind]))
+  m <- addroad(m, data, group)
+  return(m)   
+}
+
 m <- createmap()
+m <- addsequences(1, m)
+m <- addsequences(2, m)
+m <- addsequences(3, m)
 
-groupes <- c("Mahe - Nord", "Mahe - Pêche", "Mahe - Centre", "Mahe - Sud")
-#j1
-group <- groupes[1]
-b <- places_points[places_points$jour == 1,]
-m <- addplace(m, b, group)
-data <- eval(as.name("routesj1"))
-m <- addroad(m, data, group)
-
-
-#j2
-group <- 
-
-b <- places_points[places_points$jour == 2,]
-m <- addplace(m, b, group)
-m <- addroad(m, routesj2, group)
-
-#j3
-group <- 
-
-b <- places_points[places_points$jour == 3,]
-m <- addplace(m, b, group)
-m <- addroad(m, routesj3, group)
-
-#j4
-group <- 
-
-b <- places_points[places_points$jour == 4,]
-m <- addplace(m, b, group)
-m <- addroad(m, routesj4, group)
-
-
-#Praslin
-group <- "Praslin"
-
-b <- places_points[places_points$jour == 5,]
-m <- addplace(m, b, group)
-m <- addroad(m, routes_Praslin, group)
-
-#La Digue
-group <- "La Digue"
-
-b <- places_points[places_points$jour == 6,]
-m <- addplace(m, b, group)
-m <- addroad(m, routes_Digue, group)
-
+m <- addPolygons(map = m, data = mai, group= "Praslin",
+                 opacity = 100, 
+                 color = "#454545", 
+                 weight = 0.25,popup = NULL,
+                 options = list(clickable = FALSE), 
+                 fill = T, fillColor = "#00FF33", 
+                 fillOpacity = 100)
+m <- addsequences(4, m)
+m <- addsequences(5, m)
 
 
 m <- addLayersControl(m, 
-      overlayGroups = c("J1", "J2", "J3"),
-      options = layersControlOptions(collapsed = FALSE)
-)
+      overlayGroups = groupes,
+      options = layersControlOptions(collapsed = FALSE))
+
+m <- hideGroup(m, groupes)
+
 
 m
 
