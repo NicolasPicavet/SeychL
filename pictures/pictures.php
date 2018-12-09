@@ -1,6 +1,6 @@
 <header id="pictures-header">
     <?php
-    $sequences = 2;
+    $sequences = 3;
 
     echo '
     <select onchange="selectSequence()" id="sequence-select">
@@ -38,7 +38,9 @@
                 if($value != '.' || $value != '..') {
                     echo '
                     <div class="picture">
-                        <img src="'.$directory_url.'/'.$value.'"/>
+                        <div class="picture-img-container">
+                            <img src="'.$directory_url.'/'.$value.'"/>
+                        </div>
                         <div class="picture-name">'.$value.'</div>
                     </div>
                     ';
