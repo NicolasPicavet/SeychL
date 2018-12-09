@@ -32,19 +32,26 @@
         $directory = __DIR__.'/seq'.$seq;
         $directory_url = 'pictures/seq'.$seq;
         $files = array_diff(scandir($directory), array('..', '.'));
+
+        ?>
+
+        <script type="text/javascript">
+            sequencesFiles[<?php echo $seq; ?>] = <?php echo json_encode($files); ?>;
+            sequencePaths[<?php echo $seq; ?>] = <?php echo json_encode($directory_url); ?>;
+        </script>
+
+        <?php
     
         if($files) {
             foreach($files as $key => $value) {
-                if($value != '.' || $value != '..') {
-                    echo '
-                    <div class="picture" onclick="openLightbox(\''.$directory_url.'/'.$value.'\')">
-                        <div class="picture-img-container">
-                            <img src="'.$directory_url.'/'.$value.'"/>
-                        </div>
-                        <div class="picture-name">'.$value.'</div>
+                echo '
+                <div class="picture" onclick="openLightbox(\''.$seq.'\',\''.$key.'\')">
+                    <div class="picture-img-container">
+                        <img src="'.$directory_url.'/'.$value.'"/>
                     </div>
-                    ';
-                }
+                    <div class="picture-name">'.$value.'</div>
+                </div>
+                ';
             }
         }
         echo '

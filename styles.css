@@ -162,10 +162,22 @@ body {
     width: 85%;
 
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
-#lightbox img {
+#lightbox-img-container .lightbox-navigation {
+    border-color: transparent;
+    border-style: solid;
+}
+#lightbox-img-container #lightbox-previous {
+    border-width: 20px 20px 20px 0;
+    border-right-color: rgba(247, 247, 247, 0.5);
+}
+#lightbox-img-container #lightbox-next {
+    border-width: 20px 0 20px 20px;
+    border-left-color: rgba(247, 247, 247, 0.5);
+}
+#lightbox-img-container img {
     max-height: 100%;
     max-width: 100%;
 

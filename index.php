@@ -9,6 +9,11 @@
         <title>SeychL</title>
 
         <script>
+            var sequencesFiles = {};
+            var sequencePaths = {};
+            var currentSequenceKey;
+            var currentPictureKey;
+
             function selectSequence() {
                 var selected_sequence = document.getElementById("sequence-select").value;
                 var current_selected_sequence = document.getElementById("sequence-selected");
@@ -23,12 +28,25 @@
                 }
             }
 
-            function openLightbox(pictureSrc) {
-                document.getElementById("lightbox").classList.add("lightbox-opened");
-                document.getElementById("lightbox-img").src = pictureSrc;
+            function openLightbox(sequenceKey, pictureKey) {
+                if(sequencePaths[sequenceKey] && sequencesFiles[sequenceKey][pictureKey]) {
+                    currentSequenceKey = sequenceKey;
+                    currentPictureKey = pictureKey;
+                    if(!document.getElementById("lightbox").classList.contains("lightbox-opened"))
+                        document.getElementById("lightbox").classList.add("lightbox-opened");
+                    document.getElementById("lightbox-img").src = sequencePaths[sequenceKey] + '/' + sequencesFiles[sequenceKey][pictureKey];
+                } else {
+                    closeLightbox();
+                }
             }
             function closeLightbox() {
                 document.getElementById("lightbox").classList.remove("lightbox-opened");
+            }
+            function previousPictureLightbox() {
+                openLightbox(currentSequenceKey, parseInt(currentPictureKey) - 1);
+            }
+            function nextPictureLightbox() {
+                openLightbox(currentSequenceKey, parseInt(currentPictureKey) + 1);
             }
         </script>
     </head>
@@ -46,7 +64,9 @@
         <section id="lightbox">
             <div id="lightbox-close" onclick="closeLightbox()"></div>
             <div id="lightbox-img-container">
+                <div id="lightbox-previous" class="lightbox-navigation" onclick="previousPictureLightbox()"></div>
                 <img id="lightbox-img"/>
+                <div id="lightbox-next" class="lightbox-navigation" onclick="nextPictureLightbox()"></div>
             </div>
         </section>
 
