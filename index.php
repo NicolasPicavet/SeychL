@@ -22,6 +22,14 @@
                     }
                 }
             }
+
+            function openLightbox(pictureSrc) {
+                document.getElementById("lightbox").classList.add("lightbox-opened");
+                document.getElementById("lightbox-img").src = pictureSrc;
+            }
+            function closeLightbox() {
+                document.getElementById("lightbox").classList.remove("lightbox-opened");
+            }
         </script>
     </head>
     <body>
@@ -33,6 +41,13 @@
 
         <section id="pictures">
             <?php require("pictures/pictures.php")?>
+        </section>
+
+        <section id="lightbox">
+            <div id="lightbox-close" onclick="closeLightbox()"></div>
+            <div id="lightbox-img-container">
+                <img id="lightbox-img"/>
+            </div>
         </section>
 
         <footer id="main-footer"></footer>

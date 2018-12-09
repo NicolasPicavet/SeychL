@@ -37,7 +37,7 @@
             foreach($files as $key => $value) {
                 if($value != '.' || $value != '..') {
                     echo '
-                    <div class="picture">
+                    <div class="picture" onclick="openLightbox(\''.$directory_url.'/'.$value.'\')">
                         <div class="picture-img-container">
                             <img src="'.$directory_url.'/'.$value.'"/>
                         </div>
