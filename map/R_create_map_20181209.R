@@ -8,17 +8,18 @@ library(rgdal)
 library(leaflet)
 library("htmlwidgets")
 library(dplyr)
+library(htmltools)
 
 setwd("C:/Users/Myriam/Documents/0- Myriam/Projets/SeychL/map")
 
-# Dreparation du systÃ¨me de projection de notre couche 
-#thecrs <- CRS("+init=epsg:4326")
-
 # Ouvrir un shapefile
 iles <- readOGR("iles_vacs.shp")
-#proj4string(iles) <- thecrs
+plages <- readOGR("plages_vacs.shp")
+plages <- plages[plages$explore== 1,]
+#buildings <- readOGR("buildings.shp")
 
-#routes <- readOGR("routes_pst_vacances4326.shp")
+
+routes <- readOGR("routes_pst_vacances4326.shp")
 routes_avion <- readOGR("routes_avion.shp")
 routesj1 <- readOGR("routes_j1.shp")
 routesj2 <- readOGR("routes_j2.shp")
@@ -49,11 +50,8 @@ lesroutes <- c("routesj1", "routesj2", "routesj3", "routesj4", "routes_Praslin",
 # fonctions
 createmap <- function () {
   ## Initialisation 
-  m <- leaflet(padding = 0, hebergement) %>% addMarkers(~lng, ~lat, icon = makeIcon("house.png", iconWidth = 15), group= groupes[length(groupes)])
-  #m <- m %>% fitBounds(     lng1 = 55.25,
-   #                         lat1 = -4.6555,
-  #                          lng2 = 55.68,
-   #                         lat2 = -4.6560)
+  m <- leaflet(padding = 0)
+  
   ## Ajout des iles
   m <- m %>% addTiles(group = "OSM", options = providerTileOptions(maxZoom = 17))
   m <- m %>% addProviderTiles(providers$OpenTopoMap, group = "ESRI")
@@ -61,19 +59,23 @@ createmap <- function () {
   m <- addPolygons(map = m, data = iles,  group = "Iles",
                    opacity = 100,    color = "#454545", 
                    weight = 0.25, fill = T, fillColor = "#B3C4B3",   fillOpacity = 100)
+  m <- addPolylines(map = m, data = routes, group = "Iles", color = "#FFCC00", opacity = 0.8)
   
   return(m)
 }
 
-addroad <- function(m, data, group) {
+addroad <- function(m, data, group, weight = 4) {
   m <- addPolylines(map = m, data = data, group = group, 
-                    options = list(clickable = FALSE),
-                    opacity = 100)#,            highlightOptions = highlightOptions(color = "white", weight = 2,                                                        bringToFront = TRUE))
+                    #options = list(clickable = FALSE),
+                    weight = weight, 
+                    color= "#0099FF",
+                    opacity = 1)#,            highlightOptions = highlightOptions(color = "white", weight = 2,                                                        bringToFront = TRUE))
   return(m)
 }
 
-addplace <- function(m, data, group) {
-  m <- m %>% addCircleMarkers(data = data, ~lng, ~lat, group=group)#,
+addplace <- function(m, data, group, color = "#3399FF") {
+  m <- m %>% addCircleMarkers(data = data, ~lng, ~lat, group = group, 
+                              stroke = FALSE, color = color, fillOpacity = 0.7,label = ~htmlEscape(name))#,          labelOptions(lapply(1:nrow(data), function (x) {labelOptions()})))#,
                              # clusterOptions = markerClusterOptions(removeOutsideVisibleBounds = F))
   return(m)
 }
@@ -93,20 +95,28 @@ addsequences <- function(ind, m) {
 }
 
 m <- createmap()
+
+#m <- m %>% addMarkers(data = hebergement, ~lng, ~lat, icon = makeIcon("house.png", iconWidth = 15), group= groupes[length(groupes)])
+m <- addplace(m, hebergement, groupes[length(groupes)], "red")
 m <- addsequences(7, m)
 m <- addsequences(1, m)
 m <- addsequences(2, m)
 m <- addsequences(3, m)
 
 m <- addPolygons(map = m, data = mai, group= "Praslin",
-                 opacity = 100, color = "black", 
+                 opacity = 100, color = "#006600", 
                  weight = 1, popup = NULL,
                  options = list(clickable = FALSE), 
                  fill = F)
-m <- m %>%  addPolylines(data = chemin_mai, group = "Praslin", color = "#00CCFF",  weight = 3,  opacity = 100)
+#m <- m %>%  addPolylines(data = chemin_mai, group = "Praslin", color = "#00CCFF",  weight = 3,  opacity = 100)
+m <- addroad(m, chemin_mai, "Praslin", weight = 2)
 m <- addsequences(4, m)
 m <- addsequences(5, m)
 m <- addsequences(6, m)
+
+m <- addPolygons(map = m, data = plages,  group = "Avion",
+                 opacity = 100,    color = "#FF6600", 
+                 weight = 1, fill = T, fillColor = "#B3C4B3",   fillOpacity = 100)
 
 
 m <- addLayersControl(m, 
