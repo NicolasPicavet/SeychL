@@ -2,7 +2,6 @@
 #### SIG ####
 #####################
 
-# Vecteur
 #install.packages('rgdal')
 #install.packages('leaflet')
 library(rgdal)
@@ -13,13 +12,14 @@ library(dplyr)
 setwd("C:/Users/Myriam/Documents/0- Myriam/Projets/SeychL/map")
 
 # Dreparation du systÃ¨me de projection de notre couche 
-thecrs <- CRS("+init=epsg:4326")
+#thecrs <- CRS("+init=epsg:4326")
 
 # Ouvrir un shapefile
 iles <- readOGR("iles_vacs.shp")
 #proj4string(iles) <- thecrs
 
-routes <- readOGR("routes_pst_vacances4326.shp")
+#routes <- readOGR("routes_pst_vacances4326.shp")
+routes_avion <- readOGR("routes_avion.shp")
 routesj1 <- readOGR("routes_j1.shp")
 routesj2 <- readOGR("routes_j2.shp")
 routesj3 <- readOGR("routes_j3.shp")
@@ -41,8 +41,8 @@ hebergement <- as.data.frame(hebergement)
 colnames(hebergement)[3] <- "lng"
 colnames(hebergement)[4] <- "lat"
 
-groupes <- c("Mahe - Nord", "Mahe - Pêche", "Mahe - Centre", "Mahe - Sud", "Praslin", "La Digue", "Hébergements")
-lesroutes <- c("routesj1", "routesj2", "routesj3", "routesj4", "routes_Praslin", "routes_Digue")
+groupes <- c("Mahe - Nord", "Mahe - Pêche", "Mahe - Centre", "Mahe - Sud", "Praslin", "La Digue", "Avion", "Hébergements")
+lesroutes <- c("routesj1", "routesj2", "routesj3", "routesj4", "routes_Praslin", "routes_Digue", "routes_avion")
 
 
 
@@ -50,33 +50,25 @@ lesroutes <- c("routesj1", "routesj2", "routesj3", "routesj4", "routes_Praslin",
 createmap <- function () {
   ## Initialisation 
   m <- leaflet(padding = 0, hebergement) %>% addMarkers(~lng, ~lat, icon = makeIcon("house.png", iconWidth = 15), group= groupes[length(groupes)])
-  m <- m %>% fitBounds(     lng1 = 55.25,#55.1977,
-                            lat1 = -4.6555,#-4.5292,
-                            lng2 = 55.68,#55.7367, 
-                            lat2 = -4.6560)#-4.8471)
+  #m <- m %>% fitBounds(     lng1 = 55.25,
+   #                         lat1 = -4.6555,
+  #                          lng2 = 55.68,
+   #                         lat2 = -4.6560)
   ## Ajout des iles
+  m <- m %>% addTiles(group = "OSM", options = providerTileOptions(maxZoom = 15))
+
   m <- addPolygons(map = m, data = iles,  group = "Iles",
                    opacity = 100,    color = "#454545", 
                    weight = 0.25, fill = T, fillColor = "#B3C4B3",   fillOpacity = 100)
-  
-  m <- m %>% addTiles(group = "OSM (default)")
   
   return(m)
 }
 
 addroad <- function(m, data, group) {
-  m <- addPolylines(map = m, data = data, group = group,
+  m <- addPolylines(map = m, data = data, group = group, 
+                    options = list(clickable = FALSE),
                     opacity = 100)#,            highlightOptions = highlightOptions(color = "white", weight = 2,                                                        bringToFront = TRUE))
   return(m)
-}
-
-addplace <- function(m, data, group) {
-#  m <- m %>% addLabelOnlyMarkers(data = data,
-#                                 label = ~name, group=group,
-#                                 labelOptions = labelOptions(noHide = T, 
-#                                                             direction = 'top', 
-#                                                             textOnly = TRUE))
-#  return(m)
 }
 
 addplace <- function(m, data, group) {
@@ -100,6 +92,7 @@ addsequences <- function(ind, m) {
 }
 
 m <- createmap()
+m <- addsequences(7, m)
 m <- addsequences(1, m)
 m <- addsequences(2, m)
 m <- addsequences(3, m)
@@ -116,21 +109,13 @@ m <- addsequences(6, m)
 
 
 m <- addLayersControl(m, 
-      baseGroups = c("OSM (default)", "Iles"),
-      overlayGroups = c(groupes[length(groupes)], groupes[1:(length(groupes)-1)]),
+      baseGroups = c("OSM","OSM-Seychelles", "Iles"),
+      overlayGroups = c(groupes[length(groupes)], groupes[(length(groupes)-1)], groupes[1:(length(groupes)-2)]),
       options = layersControlOptions(collapsed = FALSE))
 
 m <- hideGroup(m, groupes[1:6])
-
 
 m
 
 
 saveWidget(m, "map.html", selfcontained = TRUE)
-
-#######################
-#m <- m %>% addMarkers(data = places_points, label = ~name,
-#                     #icone="none",
-#                     clusterOptions = markerClusterOptions(removeOutsideVisibleBounds = T),
-#                    labelOptions = labelOptions(noHide = T, direction = 'auto'))#~sqrt(Pop) * 30, popup = ~City)
-
