@@ -55,8 +55,9 @@ createmap <- function () {
   #                          lng2 = 55.68,
    #                         lat2 = -4.6560)
   ## Ajout des iles
-  m <- m %>% addTiles(group = "OSM", options = providerTileOptions(maxZoom = 15))
-
+  m <- m %>% addTiles(group = "OSM", options = providerTileOptions(maxZoom = 17))
+  m <- m %>% addProviderTiles(providers$OpenTopoMap, group = "ESRI")
+  m <- m %>% addProviderTiles(providers$Stamen.TonerLite, group = "Stamen")
   m <- addPolygons(map = m, data = iles,  group = "Iles",
                    opacity = 100,    color = "#454545", 
                    weight = 0.25, fill = T, fillColor = "#B3C4B3",   fillOpacity = 100)
@@ -109,8 +110,8 @@ m <- addsequences(6, m)
 
 
 m <- addLayersControl(m, 
-      baseGroups = c("OSM","OSM-Seychelles", "Iles"),
-      overlayGroups = c(groupes[length(groupes)], groupes[(length(groupes)-1)], groupes[1:(length(groupes)-2)]),
+      baseGroups = c("OSM","ESRI", "Stamen", "Iles"),
+      overlayGroups = c(groupes[(length(groupes)-1)], groupes[1:(length(groupes)-2)]), #groupes[length(groupes)], 
       options = layersControlOptions(collapsed = FALSE))
 
 m <- hideGroup(m, groupes[1:6])
