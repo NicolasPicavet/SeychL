@@ -14,6 +14,8 @@
             var currentSequenceKey;
             var currentPictureKey;
 
+            var lightboxOpen;
+
             function selectSequence() {
                 var selected_sequence = document.getElementById("sequence-select").value;
                 var current_selected_sequence = document.getElementById("sequence-selected");
@@ -54,12 +56,15 @@
                     else {
                         lightboxImg.src = filePath;
                     }
+
+                    lightboxOpen = true;
                 } else {
                     closeLightbox();
                 }
             }
             function closeLightbox() {
                 document.getElementById("lightbox").classList.remove("lightbox-opened");
+                lightboxOpen = false;
             }
             function previousPictureLightbox() {
                 openLightbox(currentSequenceKey, parseInt(currentPictureKey) - 1);
@@ -94,5 +99,24 @@
         </section>
 
         <footer id="main-footer"></footer>
+
+        <script>
+            window.addEventListener("keydown", function(event) {
+                if(lightboxOpen) {
+                    event.preventDefault();
+                    switch(event.key) {
+                        case "ArrowLeft":
+                            previousPictureLightbox();
+                            break;
+                        case "ArrowRight":
+                            nextPictureLightbox();
+                            break;
+                        case "Escape":
+                            closeLightbox();
+                            break;
+                    }
+                }
+            }); 
+        </script>
     </body>
 </html>
