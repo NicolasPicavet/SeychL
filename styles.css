@@ -136,16 +136,12 @@ body {
     bottom: 0;
     left: 0;
 
-    background: rgba(0, 0, 0, 0);
-
     transition: .5s;
 
     z-index: 3;
 }
 #lightbox.lightbox-opened {
     display: flex;
-
-    background: rgba(0, 0, 0, .85);
 }
 
 #lightbox-close {
@@ -157,12 +153,12 @@ body {
 
     z-index: -1;
 
-    background: rgba(255, 255, 255, 0);
+    background: rgba(0, 0, 0, .85);
 
     transition: .3s;
 }
 #lightbox-close:hover {
-    background: rgba(255, 255, 255, .05);
+    background: rgba(0, 0, 0, .8);
 }
 
 #lightbox-img-container {
