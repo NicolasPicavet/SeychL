@@ -47,7 +47,20 @@
                 echo '
                 <div class="picture" onclick="openLightbox(\''.$seq.'\',\''.$key.'\')">
                     <div class="picture-img-container">
-                        <img src="'.$directory_url.'/'.$value.'"/>
+                    ';
+                    if(strpos($value, '.MP4') !== false) {
+                        echo '
+                            <video>
+                                <source src="'.$directory_url.'/'.$value.'" type="video/mp4">
+                                Your browser does not support HTML5 video.
+                            </video> 
+                        ';
+                    } else {
+                        echo '
+                            <img src="'.$directory_url.'/'.$value.'"/>
+                        ';
+                    }
+                    echo '
                     </div>
                     <div class="picture-name">'.$value.'</div>
                 </div>

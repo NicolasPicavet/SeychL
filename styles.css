@@ -106,7 +106,7 @@ body {
 
     height: 100%;
 }
-#pictures .picture img {
+#pictures .picture img, #pictures .picture video {
     max-width: 100%;
     max-height: 100%;
 
@@ -118,6 +118,12 @@ body {
     flex-grow: 0;
     flex-shrink: 0;
 }
+
+
+
+
+
+
 
 #lightbox {
     display: none;
@@ -174,9 +180,12 @@ body {
     border-width: 20px 0 20px 20px;
     border-left-color: rgba(247, 247, 247, 0.5);
 }
-#lightbox-img-container img {
+#lightbox-img-container img, #lightbox-img-container video {
     max-height: 100%;
     max-width: 100%;
 
+    display: none;
+}
+#lightbox-img-container img[src], #lightbox-img-container img:not([src]) + video {
     display: block;
 }

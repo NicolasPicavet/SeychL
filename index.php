@@ -30,11 +30,30 @@
 
             function openLightbox(sequenceKey, pictureKey) {
                 if(sequencePaths[sequenceKey] && sequencesFiles[sequenceKey][pictureKey]) {
+
                     currentSequenceKey = sequenceKey;
                     currentPictureKey = pictureKey;
-                    if(!document.getElementById("lightbox").classList.contains("lightbox-opened"))
-                        document.getElementById("lightbox").classList.add("lightbox-opened");
-                    document.getElementById("lightbox-img").src = sequencePaths[sequenceKey] + '/' + sequencesFiles[sequenceKey][pictureKey];
+
+                    filePath = sequencePaths[sequenceKey] + '/' + sequencesFiles[sequenceKey][pictureKey];
+
+                    lightbox = document.getElementById("lightbox");
+                    lightboxImg = document.getElementById("lightbox-img");
+                    lightboxVideo = document.getElementById("lightbox-video");
+                    lightboxVideoSrc = document.getElementById("lightbox-video-source");
+
+                    if(!lightbox.classList.contains("lightbox-opened"))
+                        lightbox.classList.add("lightbox-opened");
+
+                    lightboxVideoSrc.removeAttribute("src");
+                    lightboxImg.removeAttribute("src");
+
+                    if(sequencesFiles[sequenceKey][pictureKey].includes('.MP4')) {
+                        lightboxVideoSrc.src = filePath;
+                        lightboxVideo.load();
+                    }
+                    else {
+                        lightboxImg.src = filePath;
+                    }
                 } else {
                     closeLightbox();
                 }
@@ -66,6 +85,10 @@
             <div id="lightbox-img-container">
                 <div id="lightbox-previous" class="lightbox-navigation" onclick="previousPictureLightbox()"></div>
                 <img id="lightbox-img"/>
+                <video id="lightbox-video" controls>
+                    <source id="lightbox-video-source" type="video/mp4">
+                    Your browser does not support HTML5 video.
+                </video>
                 <div id="lightbox-next" class="lightbox-navigation" onclick="nextPictureLightbox()"></div>
             </div>
         </section>
