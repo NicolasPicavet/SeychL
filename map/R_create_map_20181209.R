@@ -9,16 +9,12 @@ library(leaflet)
 library("htmlwidgets")
 library(dplyr)
 library(htmltools)
+library(rgeos)
 
 setwd("C:/Users/Myriam/Documents/0- Myriam/Projets/SeychL/map")
 
-# Ouvrir un shapefile
+# Ouvrir les shapefiles
 iles <- readOGR("iles_vacs.shp")
-plages <- readOGR("plages_vacs.shp")
-plages <- plages[plages$explore== 1,]
-#buildings <- readOGR("buildings.shp")
-
-
 routes <- readOGR("routes_pst_vacances4326.shp")
 routes_avion <- readOGR("routes_avion.shp")
 routesj1 <- readOGR("routes_j1.shp")
@@ -46,7 +42,6 @@ groupes <- c("Mahe - Nord", "Mahe - Pêche", "Mahe - Centre", "Mahe - Sud", "Pra
 lesroutes <- c("routesj1", "routesj2", "routesj3", "routesj4", "routes_Praslin", "routes_Digue", "routes_avion")
 
 
-
 # fonctions
 createmap <- function () {
   ## Initialisation 
@@ -65,8 +60,7 @@ createmap <- function () {
 }
 
 addroad <- function(m, data, group, weight = 4) {
-  m <- addPolylines(map = m, data = data, group = group, 
-                    #options = list(clickable = FALSE),
+  m <- addPolylines(map = m, data = data, group = group,
                     weight = weight, 
                     color= "#0099FF",
                     opacity = 1)#,            highlightOptions = highlightOptions(color = "white", weight = 2,                                                        bringToFront = TRUE))
@@ -95,29 +89,21 @@ addsequences <- function(ind, m) {
 }
 
 m <- createmap()
-
-#m <- m %>% addMarkers(data = hebergement, ~lng, ~lat, icon = makeIcon("house.png", iconWidth = 15), group= groupes[length(groupes)])
+m <- addplace(m, hebergement, "Iles", "red")
 m <- addplace(m, hebergement, groupes[length(groupes)], "red")
 m <- addsequences(7, m)
 m <- addsequences(1, m)
 m <- addsequences(2, m)
 m <- addsequences(3, m)
-
-m <- addPolygons(map = m, data = mai, group= "Praslin",
+m <- addPolygons(map = m, data = mai, group = groupes[5],
                  opacity = 100, color = "#006600", 
                  weight = 1, popup = NULL,
                  options = list(clickable = FALSE), 
                  fill = F)
-#m <- m %>%  addPolylines(data = chemin_mai, group = "Praslin", color = "#00CCFF",  weight = 3,  opacity = 100)
-m <- addroad(m, chemin_mai, "Praslin", weight = 2)
+m <- addroad(m, chemin_mai, groupes[5], weight = 2)
 m <- addsequences(4, m)
 m <- addsequences(5, m)
 m <- addsequences(6, m)
-
-m <- addPolygons(map = m, data = plages,  group = "Avion",
-                 opacity = 100,    color = "#FF6600", 
-                 weight = 1, fill = T, fillColor = "#B3C4B3",   fillOpacity = 100)
-
 
 m <- addLayersControl(m, 
       baseGroups = c("OSM","ESRI", "Stamen", "Iles"),
@@ -127,6 +113,5 @@ m <- addLayersControl(m,
 m <- hideGroup(m, groupes[1:6])
 
 m
-
 
 saveWidget(m, "map.html", selfcontained = TRUE)
